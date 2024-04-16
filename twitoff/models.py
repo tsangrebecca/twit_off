@@ -13,10 +13,13 @@ class User(DB.Model):
     # setting up the schema
 
     # id column
-    id = DB.Column(DB.BigInteger, primary_key=True)
+    id = DB.Column(DB.BigInteger, primary_key=True, nullable=False)
 
     # username column
     username = DB.Column(DB.String, nullable=False)
+
+    # most recent tweet id, so we don't query existing tweets
+    newest_tweet_id = DB.Column(DB.BigInteger)
 
     # there is an imaginary tweets list living in this User class
     #   due to the backref line of code we have below
@@ -27,11 +30,16 @@ class User(DB.Model):
 
 class Tweet(DB.Model):
     # id column
-    id = DB.Column(DB.BigInteger, primary_key=True)
+    id = DB.Column(DB.BigInteger, primary_key=True, nullable=False)
     
     # text column
     text = DB.Column(DB.Unicode(300)) # allows emojis
     
+    # Store our word embeddings "vectorization"
+    # pickletype is a datatype with SQL Alchemy that allows
+    #   us to store numpy arrays inside our database
+    vect = DB.Column(DB.PickleType, nullable=False)
+
     # user_id column (foreign /secondary key)
     #   the 'user.id' refers to above code, the user class id column
     user_id = DB.Column(DB.BigInteger, DB.ForeignKey('user.id'), nullable=False)
